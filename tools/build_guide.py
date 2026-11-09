@@ -8,7 +8,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 
 SRC = sys.argv[1] if len(sys.argv) > 1 else os.path.join(ROOT, "referral-protocol-guide")
-OUT = sys.argv[2] if len(sys.argv) > 2 else os.path.join(SRC, "referral-protocol-guide.html")
+OUT = sys.argv[2] if len(sys.argv) > 2 else os.path.join(ROOT, "index.html")
 TEMPLATE = sys.argv[3] if len(sys.argv) > 3 else os.path.join(HERE, "guide_template.html")
 
 PAGES = [
@@ -41,6 +41,7 @@ def render(token, path):
     md = markdown.Markdown(extensions=["tables", "fenced_code", "toc"], extension_configs={"toc": {"toc_depth": "2-3"}})
     html = md.convert(text)
     html = re.sub(r'id="([^"]+)"', lambda m: f'id="{token}-{m.group(1)}"', html)
+    html = re.sub(r'href="#([^"]+)"', lambda m: f'href="#{token}" data-page="{token}" data-section="{token}-{m.group(1)}"', html)
     for name, tok in LINK_MAP.items():
         html = re.sub(
             r'href="' + re.escape(name) + r'(?:#([^"]+))?"',

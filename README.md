@@ -2,6 +2,10 @@
 
 The public documentation of the Wise Telecom Nodes vaults and their referral commission system.
 
+## Open the Guide
+
+The guide is a website in one file, `index.html` at the root of this repository. Download the repository (the Code button, then Download ZIP) or clone it, and open `index.html` in a browser; no server and no build step are needed, and the page works offline (the fonts it names are fetched from the web when a connection exists and fall back to system fonts otherwise). The sidebar lists the chapters and their sections, the pager at the bottom of each chapter leads to the next one, and every link between chapters stays inside the page.
+
 ## The Referral Protocol Guide
 
 `referral-protocol-guide/` holds the guide as Markdown in the GitBook layout: one file per chapter, `README.md` as the overview and `SUMMARY.md` as the table of contents. The guide explains the referral system as it is built, for depositors, referrers, integrators, front end developers, protocol developers and reviewers, and it is the public record of every accepted review finding with its reason. It follows the code: when the referral facets, the registry or the hub change, the chapter that describes the moved behaviour changes with them.
@@ -18,7 +22,7 @@ The public documentation of the Wise Telecom Nodes vaults and their referral com
 | Addresses | `referral-protocol-guide/addresses.md` |
 | Frequently Asked Questions | `referral-protocol-guide/faq.md` |
 
-A single file rendering of the whole guide is `referral-protocol-guide/referral-protocol-guide.html`. It is built from the chapters and is refreshed after every edit, so the two never drift apart.
+The page `index.html` is built from these chapters and is refreshed after every edit, so the two never drift apart. The Markdown is the source; the page is what a reader opens.
 
 The contracts the guide describes live in the vault repository, [wise-telecom-nodes-v2](https://github.com/wise-foundation/wise-telecom-nodes-v2); its configuration records (`config/vault.<product>.<network>.json`) are the source of truth for every address in the Addresses chapter.
 
@@ -34,7 +38,7 @@ The build needs Python 3 with the `markdown` package. From the repository root:
 python3 -I tools/build_guide.py
 ```
 
-The script reads the chapters from `referral-protocol-guide/`, injects them into `tools/guide_template.html` and writes `referral-protocol-guide/referral-protocol-guide.html`. Three optional arguments override the source folder, the output file and the template, in that order. The chapter files are listed in the script (`PAGES` and `LINK_MAP`); a new chapter needs an entry in both, a line in `SUMMARY.md` and a bullet in the overview.
+The script reads the chapters from `referral-protocol-guide/`, injects them into `tools/guide_template.html` and writes `index.html` at the repository root. Three optional arguments override the source folder, the output file and the template, in that order. The chapter files are listed in the script (`PAGES` and `LINK_MAP`); a new chapter needs an entry in both, a line in `SUMMARY.md` and a bullet in the overview.
 
 ## Writing Rules
 
