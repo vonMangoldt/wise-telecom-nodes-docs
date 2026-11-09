@@ -2,9 +2,28 @@
 
 The public documentation of the Wise Telecom Nodes vaults and their referral commission system.
 
-## Open the Guide
+## View the Website
 
-The guide is a website in one file, `index.html` at the root of this repository. Download the repository (the Code button, then Download ZIP) or clone it, and open `index.html` in a browser; no server and no build step are needed, and the page works offline (the fonts it names are fetched from the web when a connection exists and fall back to system fonts otherwise). The sidebar lists the chapters and their sections, the pager at the bottom of each chapter leads to the next one, and every link between chapters stays inside the page.
+The guide is a website in one file, `index.html` at the root of this repository. It needs no server, no build step and no internet connection once you have the file.
+
+**Without any tools:**
+
+1. On the repository page on GitHub, click the green **Code** button and choose **Download ZIP**.
+2. Unpack the ZIP file. It contains one folder, named after the repository and the branch.
+3. Open that folder and double click `index.html`. The guide opens in your default browser.
+
+**With git:**
+
+1. Clone the repository with `git clone`, using the HTTPS address the **Code** button shows.
+2. In the cloned folder, open `index.html` in a browser: double click it, or use the browser's Open File command.
+3. To get a newer version later, run `git pull` in that folder and reload the page.
+
+**Reading the page:**
+
+* The sidebar on the left lists the nine chapters. Click a chapter to open it, and a section title under it to jump to that section. On a narrow window the sidebar folds into the **Contents** button at the top.
+* The links at the bottom of each chapter lead to the previous and the next chapter, and every link between chapters stays inside the page.
+* The browser remembers the chapter you had open and returns to it the next time you open the file.
+* The fonts the page names are loaded from the web when a connection exists. Without one the page uses your system fonts and nothing else changes.
 
 ## The Referral Protocol Guide
 
