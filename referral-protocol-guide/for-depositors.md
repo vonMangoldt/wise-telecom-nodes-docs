@@ -10,7 +10,7 @@ This chapter covers what you do and what it means for you. What your referrer ea
 
 ### Naming a Referrer:
 
-You name a referrer by depositing through one of the referral deposit entrypoints of a vault: `depositWithReferral`, `depositAndClaimInterestWithReferral`, `depositAndCompoundInterestWithReferral`, or their Permit2 twins. Connect your wallet, open the deposit screen, enter the referrer address (or follow a referral link that fills it in) and confirm. The assignment runs first and the deposit follows as a plain deposit.
+You name a referrer by depositing through one of the referral deposit entrypoints of a vault: `depositWithReferral`, `depositAndClaimInterestWithReferral`, `depositAndCompoundInterestWithReferral`, or their Permit2 twins. Connect your wallet, open the deposit screen, enter the referrer address (or follow a referral link that fills it in) and confirm. The assignment runs first and the deposit follows as a plain deposit. You use a referral entrypoint only once: from then on every plain deposit, compound, move or bridge of yours credits the recorded referrer by itself, and no later call needs a referrer argument.
 
 **The assignment is written once.** The first referrer you name is recorded in the chain's referral registry and shared by every vault on that chain. A later deposit that names a different referrer is accepted as a deposit and the referrer argument is ignored. A zero referrer or your own address reverts. A vault, the registry or the hub can never be a referrer, and a referrer whose own referral chain leads back to you is refused, so two accounts cannot refer each other.
 

@@ -14,6 +14,10 @@ You name a referrer by depositing through a referral deposit entrypoint such as 
 
 Your deposit works exactly as before and nobody earns on it; your stake is tracked but attributed to no referrer. Because no referrer was written, a later deposit through a referral entrypoint can still name one, and from then on it earns on the stake you keep in the vaults. See [For Depositors](for-depositors.md).
 
+### Do I Have to Use the Referral Variant Every Time?
+
+No. The referral entrypoints exist to write your referrer the first time. Once it is recorded, every plain deposit, compound, move or bridge credits that referrer by itself, and a referrer argument on a later deposit is ignored. See [Naming a Referrer](for-depositors.md#naming-a-referrer).
+
 ### Does the Referral Cost Me Anything?
 
 No. Your deposit, your interest and your exits are the plain vault flows, and the commission your referrer earns, like the courier share a flush bot earns, is paid from the protocol's own pot on mainnet. Nothing is deducted from your principal or your interest. See [Does a Referral Cost Me Anything?](for-depositors.md#does-a-referral-cost-me-anything).

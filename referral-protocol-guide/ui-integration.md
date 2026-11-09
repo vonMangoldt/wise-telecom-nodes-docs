@@ -334,6 +334,7 @@ The plain deposit errors apply as well: `DepositsDisabled`, `DepositExceedCap`, 
 
 * **The referrer is the address in the field, nothing else:** an integrator that wants to be the referrer of every deposit it sends writes its own address there, on every chain, in every deposit.
 * **The first assignment wins everywhere:** a later deposit with another referrer succeeds as a deposit and the argument is ignored; show the recorded referrer, not the link's.
+* **The referral variant is needed once:** pass the referrer only while `getReferrerOf` reads zero for the user. Once a referrer is recorded, the plain deposit, compound, move and bridge calls credit it by themselves, so a front end can switch back to the plain variants.
 * **Spoke chain buckets need a designation:** without one the bucket accrues but cannot be claimed, and a contract wallet on a spoke chain must designate a mainnet address it controls.
 * **A contract referrer must exist on the deposit chain:** a spoke bucket is released only by a designation that address signs on that chain, so a smart wallet that exists on mainnet alone cannot claim what it earns on Base, Arbitrum or Robinhood until it is deployed at the same address there; read the referrer's code on the deposit chain and warn or refuse the link.
 * **The current week is never shipped:** only closed weeks travel, and a week becomes claimable only after its envelope is applied at the hub.
