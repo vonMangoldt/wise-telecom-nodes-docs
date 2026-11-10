@@ -50,7 +50,7 @@ On the vault, `claimInterest()` pays the caller's whole pending interest in the 
 
 ### Referral
 
-`flushReferrals(address[] _referrers)` and `flushReferralWindow(address _referrer, uint256 _fromWeek, uint256 _fromGapIndex)` ship a referrer's closed weeks to the hub, callable by the referrer for its own book and by allowlisted flush bots for any book, and advance the referrer's send cursors only on an own flush. `syncReferee(address _user)` and `advanceBook(address _referrer, uint256 _maxBoundaries)` are permissionless pokes that clamp a user and pre walk a book. On the registry, `setPayoutAddress(address _payout)`, `pushPayoutAddress(address _owner)`, `broadcastSync(address _user, uint64[] _selectors)`, `pokeMigration(address _user)` and `cancelCorrectReferrer(address _user)` are the user and public calls described in [UI Integration](ui-integration.md).
+`flushReferrals(address[] _referrers)` and `flushReferralWindow(address _referrer, uint256 _fromWeek, uint256 _fromGapIndex)` ship a referrer's closed weeks to the hub, callable by the referrer for its own book and by allowlisted flush bots for any book, and advance the referrer's send cursors on an own flush, or on an allowlisted bot's batch that opens a book whose cursors are still unset. `syncReferee(address _user)` and `advanceBook(address _referrer, uint256 _maxBoundaries)` are permissionless pokes that clamp a user and pre walk a book. On the registry, `setPayoutAddress(address _payout)`, `pushPayoutAddress(address _owner)`, `broadcastSync(address _user, uint64[] _selectors)`, `pokeMigration(address _user)` and `cancelCorrectReferrer(address _user)` are the user and public calls described in [UI Integration](ui-integration.md).
 
 ## Admin Functions and What the Referral Upgrade Changes
 
