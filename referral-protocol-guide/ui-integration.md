@@ -104,7 +104,7 @@ claim                  ->  USDC paid on mainnet to the payout address
 
 The chain ids the hub keys its buckets by are Ethereum 1, Base 8453, Arbitrum 42161 and Robinhood Chain 4663. The examples below use web3.js; `ZERO` is the zero address, `CHAINS` is `[1, 8453, 42161, 4663]`, and the contract addresses come from [Addresses](addresses.md).
 
-**Flushing is described, not integrated, for now.** Between the vault's weekly record and the hub's pricing sits the flush: a transaction on the vault that settles a referrer's book and ships its closed weeks to the hub, over CCIP from Base, Arbitrum and Robinhood and by a direct call on mainnet. [Shipping Weeks to the Hub](for-referrers.md#shipping-weeks-to-the-hub) explains it, including who may flush and the courier share. A front end does not need a flush button at the start: the protocol's couriers ship every book on a schedule, so a referrer's weeks reach the hub and become claimable without any action in the user interface. The flush calls and their errors join this chapter once a flush button becomes part of the integration; the two cursor views a front end reads for the activation state are already in the reference table and in [Which Views for Which Screen](ui-integration.md#which-views-for-which-screen).
+**Flushing is described, not integrated, for now.** Between the vault's weekly record and the hub's pricing sits the flush: a transaction on the vault that settles a referrer's book and ships its closed weeks to the hub, over CCIP from Base, Arbitrum and Robinhood and by a direct call on mainnet. [Shipping Weeks to the Hub](for-referrers.md#shipping-weeks-to-the-hub) explains it, including who may flush and the courier share. A front end does not need a flush button at the start: the protocol's couriers ship every book on a schedule, so a referrer's weeks reach the hub and become claimable without any action in the user interface. The flush calls and their errors join this chapter once a flush button becomes part of the integration; the two cursor views a front end reads for a book's shipping state are already in the reference table and in [Which Views for Which Screen](ui-integration.md#which-views-for-which-screen).
 
 ### The Referral Link:
 
@@ -137,14 +137,14 @@ await vault.methods.depositWithReferral(amount, referrer).send({ from: userAddre
 
 Each is the plain deposit variant with the referrer assignment run first. The call reverts when the referrer is the zero address or the depositor itself, when the vault's registry pointer is not set, and when the registry refuses the referrer (a vault, the registry, the hub, or an address whose own referral chain leads back to the depositor). A depositor who already has a referrer is kept on it and the deposit still succeeds, so read the user's referrer first and show it rather than the link's address when they differ. The Permit2 variants follow the Permit2 Deposits guide for the signature; the only difference is the trailing referrer argument.
 
-**Check a contract referrer on the deposit chain.** The registry accepts any referrer address, and the hub releases a spoke chain bucket only through a designation that this address signs on that chain. A smart wallet that exists on mainnet alone can never sign on Base, so a link that carries it sends every Base commission into a bucket nobody can claim. Before a deposit on Base, Arbitrum or Robinhood read the referrer's code on that chain: an externally owned account has no code and is fine everywhere, a contract referrer is fine only where it has code. Warn the user or refuse the link otherwise, and tell referrers to share an address they control on every chain, or to deploy their wallet at the same address on each chain before they share a link.
+**Check a contract referrer against mainnet.** The registry accepts any referrer address, and every bucket pays that same address on mainnet unless a designation signed by it on the deposit chain redirects it. An externally owned account owns its address everywhere and is fine. A smart wallet that exists on mainnet alone is fine too: it cannot sign on Base, but its Base bucket pays its own address on mainnet, where it does exist. The case to catch is a contract referrer that has code on the deposit chain but none at the same address on mainnet, or another owner there: its commission on that chain pays an address it may not control until it designates from the deposit chain. Before a deposit on Base, Arbitrum or Robinhood read the referrer's code on both chains, warn the user or refuse the link in that case, and tell referrers to share an address they control on every chain, or to deploy their wallet at the same address on mainnet before they share a link.
 
 ```javascript
-// a contract referrer must exist on the chain of the deposit; an externally owned account has no code and is fine everywhere
+// an externally owned account has no code and is fine everywhere; a contract referrer is paid at its own address on mainnet
 const codeHere = await web3.eth.getCode(referrer);
 const codeOnMainnet = await web3Mainnet.eth.getCode(referrer);
-if (codeHere === "0x" && codeOnMainnet !== "0x") {
-  // a smart wallet that exists on mainnet alone cannot designate a payout on this chain: warn, or refuse the link
+if (codeHere !== "0x" && codeOnMainnet === "0x") {
+  // a smart wallet that exists on this chain alone is paid at an address on mainnet it may not control: warn, or refuse the link
 }
 ```
 
@@ -191,18 +191,18 @@ const [standing, buckets] = await Promise.all([
 ]);
 
 // buckets.amounts[i] is what chain CHAINS[i] has credited; buckets.payouts[i] is the address a
-// claim pays, zero while that spoke chain's payout designation has not reached the hub.
+// claim pays, the referrer's own address until a designation from that chain reached the hub.
 ```
 
 * **`ladderStandingOf`:** the referred and self inputs of a closed week, the tier each reaches, the next threshold of each (zero at the top tier), the three effective rates in basis points, the referrer's latest elevation window and an `elevated` flag. The current week reads zero until it closes and its records land.
-* **`claimablesOf`:** one bucket per source chain with the address a claim would pay; a zero address means the bucket cannot be claimed yet because no payout designation from that chain has reached the hub. `total` sums every bucket and `claimableNow` only the designated ones, both before the pot's funding.
+* **`claimablesOf`:** one bucket per source chain with the address a claim would pay, the referrer itself until a designation from that chain redirected it. `total` sums every bucket and `claimableNow` equals it, a field kept from the time an undesignated spoke bucket could not pay; both are before the pot's funding.
 * **`weeklyRates` and `weeklyRatesRange`:** the three rates of a week in basis points, on the hub itself and batched on the reader.
 
 ### The Payout Designation:
 
 Link: [Payout Designation, UI Integration Guide](https://gist.github.com/vonMangoldt/e2b720dace558e8eac0f230ccc3dbba5)
 
-Commission accrues at the hub per source chain and referrer. On mainnet a referrer's bucket pays the referrer's own address unless the referrer sets another with `setPayoutAddress(address _payout)` on the hub. On Base, Arbitrum and Robinhood a bucket pays nothing until a designation from that chain has reached the hub.
+Commission accrues at the hub per source chain and referrer. Every bucket pays the referrer's own address on mainnet unless the referrer designates another: with `setPayoutAddress(address _payout)` on the hub for the mainnet bucket, and on the chain's registry for a Base, Arbitrum or Robinhood bucket, from where the designation has to reach the hub.
 
 On the spoke chain's registry:
 
@@ -221,11 +221,11 @@ const pushFee = await registry.methods.quotePushPayoutFee(referrer).call();
 await registry.methods.pushPayoutAddress(referrer).send({ from: referrer, value: pushFee });
 ```
 
-`setPayoutAddress` records the designation under the caller's address; a second designation in the same second reverts, so a correction waits one block. The designation travels to the hub with the next shipment of the referrer's book on that chain, or at once through `pushPayoutAddress` with the quoted CCIP fee as value, which anyone may send for any owner. The newest designation wins at the hub. Offer the push button when `claimablesOf` shows a zero payout for a chain with a nonzero amount.
+`setPayoutAddress` records the designation under the caller's address; a second designation in the same second reverts, so a correction waits one block. The designation travels to the hub with the next shipment of the referrer's book on that chain, or at once through `pushPayoutAddress` with the quoted CCIP fee as value, which anyone may send for any owner. The newest designation wins at the hub. Offer the push button when the registry's stamp for the referrer is above `payoutStamp(chainId, owner)` on the hub, a designation set but not landed.
 
-A designation of the zero address is valid and pays the referrer's own address on mainnet. A referrer that is a contract wallet on a spoke chain must designate a nonzero mainnet address it controls. A vault address can never designate.
+A designation of the zero address is valid and returns the bucket to the referrer's own address on mainnet, the same as no designation at all. A referrer that is a contract wallet on a spoke chain and does not control its address on mainnet should designate a mainnet address it controls. A vault address can never designate.
 
-The reverse case has no shortcut. A contract wallet that exists on mainnet alone cannot designate on a spoke chain, because nobody can sign for that address there, and nothing on the hub or the registry lets us designate on its behalf. Its spoke buckets stay unclaimable until the same wallet is deployed at the same address on that chain (a Safe or an account factory with the same owners and salt lands on the same address) and signs the designation there; the commission stays in the pot in the meantime, lost to nobody else. The check in [The Referral Link](#the-referral-link) keeps a front end from creating that case.
+The reverse case needs no designation. A contract wallet that exists on mainnet alone cannot designate on a spoke chain, because nobody can sign for that address there, and nothing on the hub or the registry lets us designate on its behalf; but its spoke buckets pay the same address on mainnet by default, where the wallet does exist, so it claims there without any designation. The case that needs care is a contract wallet that exists on a spoke chain but not at the same address on mainnet: its spoke bucket pays an address on mainnet it may not control, and only a designation signed on the spoke redirects it (a Safe or an account factory with the same owners and salt lands on the same address on mainnet, which is the other way out). The check in [The Referral Link](#the-referral-link) keeps a front end from creating that case.
 
 ### The Claim Buttons:
 
@@ -328,15 +328,14 @@ The plain deposit errors apply as well: `DepositsDisabled`, `DepositExceedCap`, 
 | `PotDry` | `claim` asked for more than the pot holds; use `claimUpTo` or `claimAll`. |
 | `NothingClaimable` | `claimAll` paid nothing. |
 | `NotPayoutAuthorized` | The caller is neither the referrer nor the bucket's payout address. |
-| `PayoutNotDesignated` | A spoke chain bucket has no designation at the hub yet. |
 
 ### Gotchas:
 
 * **The referrer is the address in the field, nothing else:** an integrator that wants to be the referrer of every deposit it sends writes its own address there, on every chain, in every deposit.
 * **The first assignment wins everywhere:** a later deposit with another referrer succeeds as a deposit and the argument is ignored; show the recorded referrer, not the link's.
 * **The referral variant is needed once:** pass the referrer only while `getReferrerOf` reads zero for the user. Once a referrer is recorded, the plain deposit, compound, move and bridge calls credit it by themselves, so a front end can switch back to the plain variants.
-* **Spoke chain buckets need a designation:** without one the bucket accrues but cannot be claimed, and a contract wallet on a spoke chain must designate a mainnet address it controls.
-* **A contract referrer must exist on the deposit chain:** a spoke bucket is released only by a designation that address signs on that chain, so a smart wallet that exists on mainnet alone cannot claim what it earns on Base, Arbitrum or Robinhood until it is deployed at the same address there; read the referrer's code on the deposit chain and warn or refuse the link.
+* **A designation is optional:** every bucket pays the referrer's own address on mainnet until the referrer designates another, and a contract wallet on a spoke chain that does not control its address on mainnet should designate one it controls before its first commission accrues.
+* **A contract referrer's address must be its own on mainnet:** a spoke bucket pays the same address on mainnet by default and only a designation that address signs on the deposit chain can redirect it, so a smart wallet that exists on Base, Arbitrum or Robinhood but not at the same address on mainnet earns into a bucket paid to an address it may not control; read the referrer's code on both chains and warn or refuse a link whose contract address has no code on mainnet.
 * **The current week is never shipped:** only closed weeks travel, and a week becomes claimable only after its envelope is applied at the hub.
 * **A closed week keeps its verdict:** rates can rise when more records arrive, never fall, and nothing already credited is clawed back.
 * **Joining the exit queue ends the referrer's credit for the queued amount**, like a withdrawal would; leaving the queue unfilled restores nothing.
@@ -361,8 +360,8 @@ The tables below list every read function a front end or an indexer can use, wit
 | `getCohortWeekCrumb(address _referrer, uint256 _week) returns (uint256)` | vault chain | One closed week's referred token seconds (three 80 bit lanes plus the written bit), the record the hub prices. |
 | `getCohortWeekCrumbs(address _referrer, uint256 _fromWeek, uint256 _count) returns (uint256[] crumbs)` | vault chain | A range of closed weeks' records, for a per week chart of referred stake. |
 | `getCohortGapLogLength(address _referrer) returns (uint256)`, `getCohortGapLogEntry(address _referrer, uint256 _index) returns (uint256)` | vault chain | Dormant spans recorded as one gap record each (from week, to week, mature principal). |
-| `getFlushedThroughWeek(address _referrer) returns (uint256)` | vault chain | The last closed week the referrer's own flush shipped from this vault; zero until the referrer has flushed its own book here once, and a courier cannot carry the book while it is zero. |
-| `getFlushCursors(address[] _referrers) returns (uint256[] throughWeeks, uint256[] gapIndexes, uint256[] gapResumeWeeks)` | vault chain | The two send cursors of many referrers at once: the through week, the index of the next gap record to ship and the week at which to resume inside it, for the activation check of a dashboard. |
+| `getFlushedThroughWeek(address _referrer) returns (uint256)` | vault chain | The last closed week shipped from this vault by a flush that wrote the cursors, the referrer's own flush or the courier batch that opened the book; zero until the book has been shipped here once. |
+| `getFlushCursors(address[] _referrers) returns (uint256[] throughWeeks, uint256[] gapIndexes, uint256[] gapResumeWeeks)` | vault chain | The two send cursors of many referrers at once: the through week, the index of the next gap record to ship and the week at which to resume inside it, for the shipping state of a dashboard. |
 
 #### Registry: Every Getter
 
@@ -391,7 +390,7 @@ The tables below list every read function a front end or an indexer can use, wit
 | Function | Chain | Feeds |
 |---|---|---|
 | `claimable(uint256 _chainId, address _account) returns (uint256)` | mainnet | Commission (or courier share) accrued and not yet claimed, per source chain and address. |
-| `payoutAddressOf(uint256 _chainId, address _owner) returns (address)` | mainnet | The address a claim of that bucket pays; zero means the spoke bucket cannot be claimed yet. |
+| `payoutAddressOf(uint256 _chainId, address _owner) returns (address)` | mainnet | The address a claim of that bucket pays: the owner itself until a designation from that chain redirected it. |
 | `payoutStamp(uint256 _chainId, address _owner) returns (uint256)` | mainnet | The stamp of the designation the hub holds for that bucket; zero means none. |
 | `totalAccrued() returns (uint256)`, `totalClaimed() returns (uint256)`, `totalPayable() returns (uint256)` | mainnet | Protocol totals: everything priced (commission and courier share), everything paid out, and the amount owed to buckets that can claim; `totalPayable - totalClaimed` is what the pot should hold. |
 | `USD_TOKEN() returns (IERC20)` | mainnet | The pot's token; its `balanceOf(hub)` is the cover for claims. |
@@ -422,7 +421,7 @@ The tables below list every read function a front end or an indexer can use, wit
 | `paidCursorAt(address _reporter, address _referrer, uint256 _week) returns (uint256 y1Cursor, uint256 y2Cursor, uint256 mCursor)` | mainnet | The paid cursor of a mainnet vault by address. |
 | `paidCursorsAtSource(bytes32 _source, address _referrer, uint256 _fromWeek, uint256 _count) returns (uint256[] cursorWords)` | mainnet | Paid cursors per week as packed lane words, the pending versus settled picture of a source. |
 | `claimableOf(uint256 _chainId, address[] _referrers) returns (uint256[] amounts)` | mainnet | Claimable amounts of many referrers on one chain, for leaderboards. |
-| `claimablesOf(address _referrer, uint256[] _chainIds) returns (uint256[] amounts, address[] payouts, uint256 total, uint256 claimableNow)` | mainnet | One referrer's buckets across chains with the payout address each pays and the claimable now total. |
+| `claimablesOf(address _referrer, uint256[] _chainIds) returns (uint256[] amounts, address[] payouts, uint256 total, uint256 claimableNow)` | mainnet | One referrer's buckets across chains with the payout address each pays, the owner itself until designated, and the total; `claimableNow` equals `total`. |
 
 ### Reference: Every Event
 
@@ -490,7 +489,6 @@ The tables list every event with its indexed fields marked and what a dashboard 
 | `CrumbLaneRegression(bytes32 indexed source, address indexed referrer, uint256 indexed week, uint256 laneKind, uint256 incoming, uint256 cursor)` | A delivery below the paid cursor; nothing paid, an anomaly signal. |
 | `PayoutAddressSet(uint256 indexed chainId, address indexed owner, address indexed payout)` | A designation reached the hub for a bucket; the state of the payout designation per chain. |
 | `DesignationPushReceived(uint64 indexed srcChainSelector, uint256 indexed chainId, address indexed owner)` | A pushed designation arrived. |
-| `PayoutBacklogReleased(uint256 indexed chainId, address indexed owner, uint256 amount)` | A bucket became claimable and its backlog joined the amount owed. |
 | `PayoutClaimed(uint256 indexed chainId, address indexed referrer, address indexed payout, uint256 amount)` | A claim was paid: claimed per chain, per referrer and per payout address. |
 | `ReferrerElevated(address indexed referrer, uint256 fromWeek)`, `ReferrerElevationEnded(address indexed referrer, uint256 untilWeek)` | Elevation windows per referrer; replayed in order they give the whole history. |
 | `RateTableScheduled(uint256 indexed index, uint256 effectiveFromWeek)` | A rate table was published for a future week; read it with `rateTableAt(index)`. |
@@ -503,11 +501,11 @@ The tables list every event with its indexed fields marked and what a dashboard 
 
 * **A depositor's profile:** read `getReferrerPair` on the user's chain for the referrer and the time since when, `proposedCorrection` and `correctionQueuedAt` for an open proposal to veto, and `getAttributedContribution` on each vault for how much of the user's stake is credited.
 * **A referrer's overview:** read `claimablesOf` on the reader for accrued and claimable per chain, `ladderStandingOf` for the current tier and rates, `ladderInputsRange` and `weeklyRatesRange` for the week charts, and `getPayoutDesignation` on each spoke registry beside `payoutAddressOf` on the hub for the designation state.
-* **A referrer's activation:** three states, each cleared by one action of the referrer. A vault needs the referrer's first own flush when `getFlushedThroughWeek` on that vault reads zero while the fourth value of `getCohortBook`, the last settle timestamp, is nonzero: the book exists but its owner has never shipped it, and a courier cannot carry it until that first own flush. A spoke chain needs a designation when `getPayoutDesignation` on its registry returns a stamp of zero; the hub ignores an unset designation, so a flush does not stand in for `setPayoutAddress`. A designation is set but not landed when the registry's stamp is above `payoutStamp(chainId, owner)` on the hub for that chain; the bucket stays unclaimable, and `claimablesOf` shows a zero payout for it, until the designation reaches the hub with the next flush of the book or a push. Mainnet needs no designation.
+* **A referrer's shipping and payout state:** nothing here needs the referrer's action. A vault whose `getFlushedThroughWeek` reads zero while the fourth value of `getCohortBook`, the last settle timestamp, is nonzero holds a book that has not been shipped yet; the next courier batch opens it. A spoke chain whose registry `getPayoutDesignation` returns a stamp of zero pays the referrer's own address on mainnet, and `claimablesOf` shows that address for the bucket. A designation is set but not landed when the registry's stamp is above `payoutStamp(chainId, owner)` on the hub for that chain; the bucket pays its previous address until the designation reaches the hub with the next flush of the book or a push. A front end that helps a contract wallet referrer shows the designation step on every spoke chain where the wallet does not control its address on mainnet.
 * **A per vault detail:** read `getCohortBook` and `getCohortWeekCrumbs` for the measured weeks and `weekReportsAtSource` with `paidCursorsAtSource` on the reader for shipped versus settled weeks.
 * **An indexer:** build the history from `ReferralAssigned`, `CohortContributionCredited`, `CrumbPriced`, `GapPriced`, `WeekToppedUp`, `PayoutAddressSet`, `PayoutClaimed`, the correction events and the elevation events.
 
-**Batching the spoke activation.** The vault's `MulticallFacet` cannot do it: `multicall` batches calls into the same diamond only and is not payable, so it can neither reach the registry nor carry the CCIP fee of the flush. Spoke activation is a wallet level batch, EIP 5792 calls from a smart wallet or an externally owned account under EIP 7702, with the registry designation first, so that the flush carries it, and the vault flush with its fee second, or two transactions in that order. The flush refunds the excess fee to the sender, so a contract wallet that sends it must be able to receive the native token.
+**Batching a designation with an own flush.** A referrer who wants both in one go cannot use the vault's `MulticallFacet`: `multicall` batches calls into the same diamond only and is not payable, so it can neither reach the registry nor carry the CCIP fee of the flush. It is a wallet level batch, EIP 5792 calls from a smart wallet or an externally owned account under EIP 7702, with the registry designation first, so that the flush carries it, and the vault flush with its fee second, or two transactions in that order. The flush refunds the excess fee to the sender, so a contract wallet that sends it must be able to receive the native token.
 
 ### Conclusion
 

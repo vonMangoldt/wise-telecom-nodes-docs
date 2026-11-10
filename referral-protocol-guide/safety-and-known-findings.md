@@ -172,9 +172,9 @@ With a zero balance every bucket clamps to zero and `claimAll` reverts `NothingC
 
 The buckets are paid in the order the caller lists them against the shrinking cover, so a payout address that calls `claimAll` can put its own chain first. The payout address was designated by the referrer and every bucket pays to the referrer's designations, so the order moves the referrer's own money between the referrer's own buckets.
 
-### A Zero Payout Designation Pays the Referrer's Own Address on Mainnet
+### A Bucket Without a Designation Pays the Referrer's Own Address on Mainnet
 
-The registry accepts the zero address as a payout and the hub stores it with a valid stamp, so the bucket pays the referrer's own address on the hub chain. The referrer set that designation itself; a contract wallet on a spoke designates a nonzero mainnet address it controls, as [Your Payout Address per Chain](for-referrers.md#your-payout-address-per-chain) says.
+A bucket whose owner never designated a payout address, and a bucket whose owner designated the zero address, both pay the owner's own address on the hub chain. An externally owned account loses nothing by this. A contract wallet used as referrer or courier on a spoke chain whose address it does not control on mainnet has that bucket payable to the address there, so such an owner designates on the spoke before its first commission accrues, as [Your Payout Address per Chain](for-referrers.md#your-payout-address-per-chain) says.
 
 ### The Hub Local Setter Writes Under an Equal Stamp and Loses an Equal Second Tie
 
@@ -186,7 +186,7 @@ A piggybacked designation is read at plan time and applied when the envelope is 
 
 ### A Designation That Fails the Clock Check Is Skipped While the Entry Prices
 
-A stamp more than one hour ahead of the hub clock is skipped with `FlushDesignationSkipped` and the entry's weeks still price, so a spoke bucket stays unclaimable until a designation lands. No chain pair drifts by an hour, and `pushPayoutAddress` lands a fresh designation on demand.
+A stamp more than one hour ahead of the hub clock is skipped with `FlushDesignationSkipped` and the entry's weeks still price, so the bucket keeps paying its previous payout address, the owner's own address when none landed before, until a designation lands. No chain pair drifts by an hour, and `pushPayoutAddress` lands a fresh designation on demand.
 
 ### A Second Designation Inside One Second Reverts
 

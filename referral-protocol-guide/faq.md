@@ -58,7 +58,7 @@ The pot is funded by the protocol and can be short between top ups. `claim` then
 
 ### Where Is My Commission Paid?
 
-At the hub on Ethereum mainnet, in USDC, into one bucket per source chain and referrer. A mainnet bucket pays your own address by default; a Base, Arbitrum or Robinhood bucket pays only after you designate a payout address on that chain's registry and it reaches the hub, and a contract wallet must designate a nonzero mainnet address it controls. See [Your Payout Address per Chain](for-referrers.md#your-payout-address-per-chain).
+At the hub on Ethereum mainnet, in USDC, into one bucket per source chain and referrer. Every bucket pays your own address on mainnet by default, and you can designate another payout address per chain whenever you like; a contract wallet that does not control its address on mainnet designates one it does. See [Your Payout Address per Chain](for-referrers.md#your-payout-address-per-chain).
 
 ### What Is the Sovren Vault, and Does It Count for My Ladder?
 
@@ -70,7 +70,7 @@ Nothing changes for you. The bot earns the courier share on top of your commissi
 
 ### What Do I Have to Do Once?
 
-One own flush on every vault where your referees hold stake, so that our couriers can carry your book there from then on, and on Base, Arbitrum and Robinhood one payout designation per chain, so that the bucket of that chain can pay you; mainnet needs no designation. The flush and who may send it are in [Shipping Weeks to the Hub](for-referrers.md#shipping-weeks-to-the-hub), the designation in [Your Payout Address per Chain](for-referrers.md#your-payout-address-per-chain), and the states a front end derives from them in [Which Views for Which Screen](ui-integration.md#which-views-for-which-screen).
+Nothing. Our couriers carry your book on every vault from its first closed week, and every bucket pays your own address on mainnet. Two actions are optional: flushing your own book, if you want to ship first or move the cursors yourself, in [Shipping Weeks to the Hub](for-referrers.md#shipping-weeks-to-the-hub), and designating a payout address per chain, if you want a bucket paid elsewhere, in [Your Payout Address per Chain](for-referrers.md#your-payout-address-per-chain). A contract wallet that does not control its address on mainnet should designate. The states a front end derives are in [Which Views for Which Screen](ui-integration.md#which-views-for-which-screen).
 
 ## Integrator Questions
 
