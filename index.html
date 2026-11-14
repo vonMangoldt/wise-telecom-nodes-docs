@@ -1593,8 +1593,8 @@ const earning = syncEnabled;
 <td><code>config/hub.mainnet.json</code></td>
 </tr>
 <tr>
-<td><code>ReferralHubReader</code>, verified on Etherscan</td>
-<td><code>0xd0ec5Cc9A6F4d1289fAdbA648C165027cF57c125</code></td>
+<td><code>ReferralHubReader</code>, verified on Etherscan, redeployed on 2026-11-14 by the payout by default round (the earlier reader <code>0xd0ec5Cc9A6F4d1289fAdbA648C165027cF57c125</code> of 2026-10-22 still answers, but under the old payout rule, so read this one)</td>
+<td><code>0xab91590fe31c0e800454B2f2ba3D4E3a355D3113</code></td>
 <td><code>config/hub-reader.mainnet.json</code></td>
 </tr>
 <tr>
@@ -1614,18 +1614,18 @@ const earning = syncEnabled;
 </tr>
 <tr>
 <td>Flush round facets of the <code>usdc</code> vault, created and queued on 2026-10-25, routed since 2026-10-28, the flush hub pointer wired on 2026-11-02 (<code>CohortFlushFacet</code>, <code>CohortFlushPolicyFacet</code>, the <code>CohortHookFacet</code> of the flush round and the grown <code>AdminFacet</code>)</td>
-<td>AdminFacet <code>0x0fad1e80ccc0c6c344c8b98a34820e6d6642038f</code>, CohortFlushFacet <code>0xf5b8123483480f438ce0355ff0ae24d4f13c7f25</code>, CohortFlushPolicyFacet <code>0xceb631887fd080defcf7c71ab4cb60716163af16</code>, CohortHookFacet <code>0x1eb694aeab032c8a3f4ae7b386a3f6312f9fdc9f</code></td>
-<td><code>broadcast/UpgradeCohortFlush.s.sol/1/</code></td>
+<td>AdminFacet <code>0x0fad1e80ccc0c6c344c8b98a34820e6d6642038f</code>, CohortFlushFacet <code>0x2ada747e79664bd3d22c0bf109c454a64f89e837</code> (the courier open build, routed on 2026-11-14 in place of <code>0xf5b8123483480f438ce0355ff0ae24d4f13c7f25</code>), CohortFlushPolicyFacet <code>0xceb631887fd080defcf7c71ab4cb60716163af16</code>, CohortHookFacet <code>0x1eb694aeab032c8a3f4ae7b386a3f6312f9fdc9f</code></td>
+<td><code>broadcast/UpgradeCohortFlush.s.sol/1/</code>, the courier open facet in <code>broadcast/UpgradeCohortFlushCourier.s.sol/1/</code></td>
 </tr>
 <tr>
 <td>Flush round facets of the <code>usdt</code> vault, created and queued on 2026-10-25, routed since 2026-10-28, the flush hub pointer wired on 2026-11-02 (<code>CohortFlushFacet</code>, <code>CohortFlushPolicyFacet</code>, the <code>CohortHookFacet</code> of the flush round and the grown <code>AdminFacet</code>)</td>
-<td>AdminFacet <code>0xe7dfd237b66861760364d29a2222a1b4a9d404ae</code>, CohortFlushFacet <code>0x81c3a288b5ef2574a9987f6d3734f3b807b96e96</code>, CohortFlushPolicyFacet <code>0xed8099dbeef66a59b70408ff35deaa471096279d</code>, CohortHookFacet <code>0x1a5baf2f9bf5e6ea20b6339ed7e0cb4b27972b2d</code></td>
-<td><code>broadcast/UpgradeCohortFlush.s.sol/1/</code></td>
+<td>AdminFacet <code>0xe7dfd237b66861760364d29a2222a1b4a9d404ae</code>, CohortFlushFacet <code>0x79f60cfd7f340b0e52062fb1c56b61443eca5d2a</code> (the courier open build, routed on 2026-11-14 in place of <code>0x81c3a288b5ef2574a9987f6d3734f3b807b96e96</code>), CohortFlushPolicyFacet <code>0xed8099dbeef66a59b70408ff35deaa471096279d</code>, CohortHookFacet <code>0x1a5baf2f9bf5e6ea20b6339ed7e0cb4b27972b2d</code></td>
+<td><code>broadcast/UpgradeCohortFlush.s.sol/1/</code>, the courier open facet in <code>broadcast/UpgradeCohortFlushCourier.s.sol/1/</code></td>
 </tr>
 <tr>
 <td>Flush round facets of the <code>usdg</code> vault, created and queued on 2026-10-25, routed since 2026-10-28, the flush hub pointer wired on 2026-11-02 (<code>CohortFlushFacet</code>, <code>CohortFlushPolicyFacet</code>, the <code>CohortHookFacet</code> of the flush round and the grown <code>AdminFacet</code>)</td>
-<td>AdminFacet <code>0x449205ff28b929e6b95ae45fe1e1295ab8e405c7</code>, CohortFlushFacet <code>0xb4f192be50b4b89c00b9cbfc44a22f91eba7b6bd</code>, CohortFlushPolicyFacet <code>0x8cc1073923bb38d6c07384153e485bf41b4b7c46</code>, CohortHookFacet <code>0x2606fa35f00b044466256236d31c66247f4aa072</code></td>
-<td><code>broadcast/UpgradeCohortFlush.s.sol/1/</code></td>
+<td>AdminFacet <code>0x449205ff28b929e6b95ae45fe1e1295ab8e405c7</code>, CohortFlushFacet <code>0x98178d639b006d7a8733edc4c31874bcb05294f6</code> (the courier open build, routed on 2026-11-14 in place of <code>0xb4f192be50b4b89c00b9cbfc44a22f91eba7b6bd</code>), CohortFlushPolicyFacet <code>0x8cc1073923bb38d6c07384153e485bf41b4b7c46</code>, CohortHookFacet <code>0x2606fa35f00b044466256236d31c66247f4aa072</code></td>
+<td><code>broadcast/UpgradeCohortFlush.s.sol/1/</code>, the courier open facet in <code>broadcast/UpgradeCohortFlushCourier.s.sol/1/</code></td>
 </tr>
 <tr>
 <td>Sovren vault diamond, product <code>wsnusdc</code> (vault system 1; allowlisted on the mainnet registry since 2026-10-25; its registry round routed since 2026-10-28; since 2026-11-02 its registry pointer is wired, its legacy bridge pair retired, its flush round routed, its recorder armed and the hub accepts it as a reporter; its flush hub pointer is wired since 2026-11-05 and the allowlisted courier may flush its books since that day)</td>
@@ -1715,7 +1715,7 @@ const earning = syncEnabled;
 </tbody>
 </table></div>
 <h3 id="addresses-the-hub-facets">The Hub Facets</h3>
-<p>The hub diamond routes every call to one of five facets. A reader never calls a facet directly: every view and every claim goes to the hub diamond address above, which delegates to the facet under its own storage. The facets are listed so their verified source can be found on Etherscan; the addresses come from the hub deploy broadcast record <code>broadcast/DeployReferralHub.s.sol/1/deploy-latest.json</code>.</p>
+<p>The hub diamond routes every call to one of five facets. A reader never calls a facet directly: every view and every claim goes to the hub diamond address above, which delegates to the facet under its own storage. The facets are listed so their verified source can be found on Etherscan; the checkpoints and rates facets come from the hub deploy broadcast record <code>broadcast/DeployReferralHub.s.sol/1/deploy-latest.json</code>, and the intake, mailbox and payout facets from <code>broadcast/UpgradeReferralHubPayout.s.sol/1/</code>: they are the payout by default build, routed on 2026-11-14 through the hub's own three day selector timelock in place of <code>0x2e27F6D2C35b6ec95d0553254062D0ed562fA49E</code>, <code>0xaE7088669ed3755979484e68939297cEa59220e1</code> and <code>0x6D9f0a64e7F88aaf36Ef90e30f99fAb512A672C2</code> of 2026-10-22.</p>
 <div class="tbl"><table>
 <thead>
 <tr>
@@ -1734,15 +1734,15 @@ const earning = syncEnabled;
 </tr>
 <tr>
 <td><code>ReferralHubIntakeFacet</code></td>
-<td><code>0x2e27F6D2C35b6ec95d0553254062D0ed562fA49E</code></td>
+<td><code>0xAef391d26eF9e0B146b42b0F4Cbe4e023f330af6</code></td>
 </tr>
 <tr>
 <td><code>ReferralHubMailboxFacet</code></td>
-<td><code>0xaE7088669ed3755979484e68939297cEa59220e1</code></td>
+<td><code>0x3e1218f5BF49867C52Fa29AF57cd6f9353683123</code></td>
 </tr>
 <tr>
 <td><code>ReferralHubPayoutFacet</code></td>
-<td><code>0x6D9f0a64e7F88aaf36Ef90e30f99fAb512A672C2</code></td>
+<td><code>0x9284bE101A1E69fE74146bD6941596f01cc3e7A5</code></td>
 </tr>
 </tbody>
 </table></div>
@@ -1798,13 +1798,13 @@ const earning = syncEnabled;
 </tr>
 <tr>
 <td>Flush round facets of the <code>usdc</code> vault, created and queued on 2026-10-25, routed since 2026-10-28, the flush hub pointer wired on 2026-11-02 (<code>CohortFlushFacet</code>, <code>CohortFlushPolicyFacet</code>, the <code>CohortHookFacet</code> of the flush round and the grown <code>AdminFacet</code>)</td>
-<td>AdminFacet <code>0xb14c70b5a0e671f25cd787f0c6d4abde092de201</code>, CohortFlushFacet <code>0x6967f036a56b9b40b2c0b150cffd36ad93b3390d</code>, CohortFlushPolicyFacet <code>0xbb8d2febf74deac96ad82cb9f7a6437ae81b8760</code>, CohortHookFacet <code>0x27f4e57b5dd902964b4cc3e4407844ffa8683e2e</code></td>
-<td><code>broadcast/UpgradeCohortFlush.s.sol/8453/</code></td>
+<td>AdminFacet <code>0xb14c70b5a0e671f25cd787f0c6d4abde092de201</code>, CohortFlushFacet <code>0x340107f9f9f02f6de86aff51748d996a82293efd</code> (the courier open build, routed on 2026-11-14 in place of <code>0x6967f036a56b9b40b2c0b150cffd36ad93b3390d</code>), CohortFlushPolicyFacet <code>0xbb8d2febf74deac96ad82cb9f7a6437ae81b8760</code>, CohortHookFacet <code>0x27f4e57b5dd902964b4cc3e4407844ffa8683e2e</code></td>
+<td><code>broadcast/UpgradeCohortFlush.s.sol/8453/</code>, the courier open facet in <code>broadcast/UpgradeCohortFlushCourier.s.sol/8453/</code></td>
 </tr>
 <tr>
 <td>Flush round facets of the <code>usdt</code> vault, created and queued on 2026-10-25, routed since 2026-10-28, the flush hub pointer wired on 2026-11-02 (<code>CohortFlushFacet</code>, <code>CohortFlushPolicyFacet</code>, the <code>CohortHookFacet</code> of the flush round and the grown <code>AdminFacet</code>)</td>
-<td>AdminFacet <code>0x1938344cd6eab50b68430fb0713ea2d5fd22712c</code>, CohortFlushFacet <code>0x34dec44f6cbccf2c21691e5c16fa00720fa117ad</code>, CohortFlushPolicyFacet <code>0xecb2d5f856d8da0068c5c7960c6d87e534abd661</code>, CohortHookFacet <code>0xafcca980dc7216d2f935e7159a2bebeb2edfa5a4</code></td>
-<td><code>broadcast/UpgradeCohortFlush.s.sol/8453/</code></td>
+<td>AdminFacet <code>0x1938344cd6eab50b68430fb0713ea2d5fd22712c</code>, CohortFlushFacet <code>0x03764ab58e44167af59253245f5cd4994de6aab5</code> (the courier open build, routed on 2026-11-14 in place of <code>0x34dec44f6cbccf2c21691e5c16fa00720fa117ad</code>), CohortFlushPolicyFacet <code>0xecb2d5f856d8da0068c5c7960c6d87e534abd661</code>, CohortHookFacet <code>0xafcca980dc7216d2f935e7159a2bebeb2edfa5a4</code></td>
+<td><code>broadcast/UpgradeCohortFlush.s.sol/8453/</code>, the courier open facet in <code>broadcast/UpgradeCohortFlushCourier.s.sol/8453/</code></td>
 </tr>
 </tbody>
 </table></div>
@@ -1875,18 +1875,18 @@ const earning = syncEnabled;
 </tr>
 <tr>
 <td>Flush round facets of the <code>usdc</code> vault, created and queued on 2026-10-25, routed since 2026-10-28, the flush hub pointer wired on 2026-11-02 (<code>CohortFlushFacet</code>, <code>CohortFlushPolicyFacet</code>, the <code>CohortHookFacet</code> of the flush round and the grown <code>AdminFacet</code>)</td>
-<td>AdminFacet <code>0x2a571b1ec98431e29693e4d4a5ef40cce5bb1cd4</code>, CohortFlushFacet <code>0x4e5bf98544d44a5d0012e42ef89711a6ff4742d6</code>, CohortFlushPolicyFacet <code>0x7ede64ae872ab395a2bd0014075ef17c1625b084</code>, CohortHookFacet <code>0xcda1ae147734bffa593887ee22c85f72cfb930f1</code></td>
-<td><code>broadcast/UpgradeCohortFlush.s.sol/42161/</code></td>
+<td>AdminFacet <code>0x2a571b1ec98431e29693e4d4a5ef40cce5bb1cd4</code>, CohortFlushFacet <code>0xed4a30008b2fea3766dc4d98fe14276051455b90</code> (the courier open build, routed on 2026-11-14 in place of <code>0x4e5bf98544d44a5d0012e42ef89711a6ff4742d6</code>), CohortFlushPolicyFacet <code>0x7ede64ae872ab395a2bd0014075ef17c1625b084</code>, CohortHookFacet <code>0xcda1ae147734bffa593887ee22c85f72cfb930f1</code></td>
+<td><code>broadcast/UpgradeCohortFlush.s.sol/42161/</code>, the courier open facet in <code>broadcast/UpgradeCohortFlushCourier.s.sol/42161/</code></td>
 </tr>
 <tr>
 <td>Flush round facets of the <code>usdt</code> vault, created and queued on 2026-10-25, routed since 2026-10-28, the flush hub pointer wired on 2026-11-02 (<code>CohortFlushFacet</code>, <code>CohortFlushPolicyFacet</code>, the <code>CohortHookFacet</code> of the flush round and the grown <code>AdminFacet</code>)</td>
-<td>AdminFacet <code>0xfba4d8dc74aa547b88462b995c5278ec0b41abef</code>, CohortFlushFacet <code>0x95313f6fa754363f015b34efa52176500a4f4c3e</code>, CohortFlushPolicyFacet <code>0x7383f4c3cb956d219156e5d1f59cf5e5eb8cd7e1</code>, CohortHookFacet <code>0xfdc7e46d3b9eb819bdc62410d4f3684705b0e690</code></td>
-<td><code>broadcast/UpgradeCohortFlush.s.sol/42161/</code></td>
+<td>AdminFacet <code>0xfba4d8dc74aa547b88462b995c5278ec0b41abef</code>, CohortFlushFacet <code>0xf10349a9bbea336d3aec08ef28c5ed549460aa66</code> (the courier open build, routed on 2026-11-14 in place of <code>0x95313f6fa754363f015b34efa52176500a4f4c3e</code>), CohortFlushPolicyFacet <code>0x7383f4c3cb956d219156e5d1f59cf5e5eb8cd7e1</code>, CohortHookFacet <code>0xfdc7e46d3b9eb819bdc62410d4f3684705b0e690</code></td>
+<td><code>broadcast/UpgradeCohortFlush.s.sol/42161/</code>, the courier open facet in <code>broadcast/UpgradeCohortFlushCourier.s.sol/42161/</code></td>
 </tr>
 <tr>
 <td>Flush round facets of the <code>usdg</code> vault, created and queued on 2026-10-25, routed since 2026-10-28, the flush hub pointer wired on 2026-11-02 (<code>CohortFlushFacet</code>, <code>CohortFlushPolicyFacet</code>, the <code>CohortHookFacet</code> of the flush round and the grown <code>AdminFacet</code>)</td>
-<td>AdminFacet <code>0x54cd60a4c9e6d78b5634446a50e1399f9ab906dd</code>, CohortFlushFacet <code>0x81b4583be5198300af9ec41efafe7b387cc95924</code>, CohortFlushPolicyFacet <code>0x260dd53401cc559557334da819dae9a2d179df06</code>, CohortHookFacet <code>0xc0f8129962738a275d5a5b04287a6d53c48a49e3</code></td>
-<td><code>broadcast/UpgradeCohortFlush.s.sol/42161/</code></td>
+<td>AdminFacet <code>0x54cd60a4c9e6d78b5634446a50e1399f9ab906dd</code>, CohortFlushFacet <code>0xf7820391bea2cce8667de65227975fc36f1d0a2e</code> (the courier open build, routed on 2026-11-14 in place of <code>0x81b4583be5198300af9ec41efafe7b387cc95924</code>), CohortFlushPolicyFacet <code>0x260dd53401cc559557334da819dae9a2d179df06</code>, CohortHookFacet <code>0xc0f8129962738a275d5a5b04287a6d53c48a49e3</code></td>
+<td><code>broadcast/UpgradeCohortFlush.s.sol/42161/</code>, the courier open facet in <code>broadcast/UpgradeCohortFlushCourier.s.sol/42161/</code></td>
 </tr>
 </tbody>
 </table></div>
@@ -1927,8 +1927,8 @@ const earning = syncEnabled;
 </tr>
 <tr>
 <td>Flush round facets of the <code>usdg</code> vault, created and queued on 2026-10-25, routed since 2026-10-28, the flush hub pointer wired on 2026-11-02 (<code>CohortFlushFacet</code>, <code>CohortFlushPolicyFacet</code>, the <code>CohortHookFacet</code> of the flush round and the grown <code>AdminFacet</code>)</td>
-<td>AdminFacet <code>0x30872d8154576ce8d1781154b38f0ef38bd2bb8b</code>, CohortFlushFacet <code>0xce5af7d349f8c6f70faeb56118746f128f7bb688</code>, CohortFlushPolicyFacet <code>0x15576bce5a72566ebaeebab0d7b560ef973c5767</code>, CohortHookFacet <code>0x8843ee9de3f010fa4f2cb9eaa76f2bf7ec531aea</code></td>
-<td><code>broadcast/UpgradeCohortFlush.s.sol/4663/</code></td>
+<td>AdminFacet <code>0x30872d8154576ce8d1781154b38f0ef38bd2bb8b</code>, CohortFlushFacet <code>0xecc56d0255d293abc0b6590ab6e3ba83a32a5ec1</code> (the courier open build, routed on 2026-11-14 in place of <code>0xce5af7d349f8c6f70faeb56118746f128f7bb688</code>), CohortFlushPolicyFacet <code>0x15576bce5a72566ebaeebab0d7b560ef973c5767</code>, CohortHookFacet <code>0x8843ee9de3f010fa4f2cb9eaa76f2bf7ec531aea</code></td>
+<td><code>broadcast/UpgradeCohortFlush.s.sol/4663/</code>, the courier open facet in <code>broadcast/UpgradeCohortFlushCourier.s.sol/4663/</code></td>
 </tr>
 </tbody>
 </table></div>
