@@ -73,7 +73,8 @@ older than two years or a particular span:
 await vault.methods.flushReferralWindow(referrer, fromWeek, fromGapIndex).send({ from: referrer, value: fee });
 ```
 
-Only the referrer's own flush writes the vault's cursors; a courier can only ship weeks above them.
+The referrer's own flush writes the vault's cursors, and a courier batch writes them once for a book that was never
+flushed, opening it; after that a courier only ships weeks above the stored cursors and never moves them.
 
 ### Parameters
 
@@ -104,7 +105,6 @@ const wired = hub[0] !== ZERO && syncEnabled;
 | `FlushBookNotAdvanced` | A book in a multi referrer batch was not advanced to the current week; call `advanceBook` first. |
 | `InsufficientFlushFee` | The value sent is below `quoteFlushFee`. |
 | `FlushWindowInvalid` | The window form's from week or gap index is out of range. |
-| `FlushCursorVirgin` | A courier tried to ship a book the referrer has never flushed itself; the referrer's own first flush opens it. |
 | `FlushOutageGraceActive` | The weeks to ship overlap a recent pause or disarm of the recorder and the outage grace has not passed yet. |
 | `FlushHubNotSet`, `CohortSyncDisabled` | The vault is not wired or not armed yet. |
 | `FlushRefundFailed` | The excess fee could not be returned to the caller; use an address that accepts native value. |
@@ -118,7 +118,7 @@ vault.events.CohortFlushSent().on('data', (e) => { const { messageId, deliverer,
 // a mainnet flush was delivered by direct call
 vault.events.CohortFlushDelivered().on('data', (e) => { const { flushHub, deliverer, entryCount } = e.returnValues; });
 
-// the referrer's own flush advanced the cursors
+// the referrer's own flush advanced the cursors, or a courier batch opened a never flushed book
 vault.events.CohortReferrerFlushed({ filter: { referrer } })
     .on('data', (e) => { const { flushedThroughWeek, flushedGapIndex, gapResumeWeek } = e.returnValues; });
 
@@ -132,8 +132,9 @@ it earned.
 ## Gotchas
 
 - **Only closed weeks travel.** Nobody gains by flushing at a particular moment inside a week.
-- **The referrer's own flush moves the cursors.** A courier can only ship weeks above them; a referrer who wants to
-  control what ships first flushes its own book first.
+- **The referrer's own flush moves the cursors.** A courier batch opens a book that was never flushed and then only
+  ships weeks above the stored cursors; a referrer who wants to control what ships first flushes its own book first.
+  The Sovren vault keeps the earlier rule until its own port ships: there the referrer's own first flush opens the book.
 - **The courier share is paid on top.** An allowlisted bot earns 5 percent (the genesis courier share) of the
   commission of the closed weeks it priced first, paid by the protocol, never deducted from the referrer. A self
   flush earns no share.

@@ -8,9 +8,10 @@ vaults `usdc`, `usdt` and `usdg` on Ethereum, Base, Arbitrum and Robinhood Chain
 ## Core Concept
 
 Commission accrues at the hub on Ethereum mainnet per source chain and referrer, and is always paid in USDC on
-mainnet. The mainnet bucket pays the referrer's own address unless the referrer sets another on the hub. A Base,
-Arbitrum or Robinhood bucket pays nothing until a designation made on that chain has reached the hub, because the
-same address on mainnet may be undeployed or belong to someone else.
+mainnet. Every bucket pays the referrer's own address on mainnet unless the referrer sets another: the mainnet bucket
+through the hub, a Base, Arbitrum or Robinhood bucket through a designation made on that chain that has reached
+the hub. A contract wallet designates on the spoke, because the same address on mainnet may be undeployed or
+belong to someone else.
 
 ```
 spoke chain:  registry.setPayoutAddress(payout)   ->  travels with the next flush of the book
@@ -62,7 +63,7 @@ await hub.methods.setPayoutAddress(mainnetPayout).send({ from: referrer });
 | View | Chain | Returns |
 |---|---|---|
 | `getPayoutDesignation(address _owner)` | spoke registry | `(address payout, uint256 stamp)`, the stamp is `(setAt << 8) \| rank`. |
-| `payoutAddressOf(uint256 _chainId, address _owner)` | hub | The address a claim of that bucket pays; zero means not claimable yet. |
+| `payoutAddressOf(uint256 _chainId, address _owner)` | hub | The address a claim of that bucket pays; the owner itself until a designation from that chain has landed. |
 | `payoutStamp(uint256 _chainId, address _owner)` | hub | The stamp the hub holds for that bucket; zero means none. |
 
 ## Preconditions
@@ -100,16 +101,15 @@ hub.events.PayoutAddressSet({ filter: { owner: referrer } })
 ```
 
 `DesignationPushReceived` and `FlushDesignationSkipped` on the hub show a push arriving or a stale designation
-word being rejected; `PayoutBacklogReleased(chainId, owner, amount)` fires when a bucket becomes claimable and
-its backlog joins the amount owed.
+word being rejected.
 
 ## Gotchas
 
 - **A contract wallet on a spoke chain must designate.** Its address on mainnet may be nobody's, or someone
   else's. Designate a nonzero mainnet address it controls.
 - **The newest designation wins.** A later stamp replaces an earlier one at the hub; two in the same second revert.
-- **Offer the push button when a bucket shows a zero payout with a nonzero amount.** Otherwise the designation
-  waits for the next flush of the book.
+- **Offer the push button when a designation is set on the spoke but the hub still pays the referrer's own address.**
+  Otherwise the designation waits for the next flush of the book.
 - **The zero address is a valid designation.** It pays the referrer's own address on mainnet.
 - **The hub's own `setPayoutAddress` only moves the mainnet bucket.** Spoke buckets take their designation from
   their own chain.
@@ -123,6 +123,6 @@ its backlog joins the amount owed.
 | Referral registry | `0xC97aCd3450e60962E1259e5cFd78Dc99d0D86753` | Robinhood (4663) |
 | Referral registry | `0x294713C98E20F2120261201B7B74079bba2E3617` | Ethereum (1) |
 | Referral hub | `0x68D207E22037d1B0764a509C16c08310C539ce94` | Ethereum |
-| `ReferralHubReader` | `0xd0ec5Cc9A6F4d1289fAdbA648C165027cF57c125` | Ethereum |
+| `ReferralHubReader` | `0xab91590fe31c0e800454B2f2ba3D4E3a355D3113` | Ethereum |
 
 The hub pays USDC, 6 decimals.
