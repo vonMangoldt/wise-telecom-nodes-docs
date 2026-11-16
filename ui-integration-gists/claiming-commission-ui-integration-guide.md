@@ -32,11 +32,12 @@ const [amounts, payouts, cover] = await Promise.all([
     Promise.all(CHAINS.map((c) => hub.methods.payoutAddressOf(c, referrer).call())),
     usdc.methods.balanceOf(HUB).call()
 ]);
-const claimableChains = CHAINS.filter((_, i) => amounts[i] !== '0' && payouts[i] !== ZERO);
+const claimableChains = CHAINS.filter((_, i) => amounts[i] !== '0');
 ```
 
 The reader's `claimablesOf(referrer, chainIds)` returns the same amounts and payout addresses in one call, with
-`total` and `claimableNow`.
+`total` and `claimableNow`, which are equal: every bucket is claimable, and its payout address is the referrer's own
+mainnet address until the referrer designates another from that chain.
 
 ## 2. Claim everything that can pay
 
@@ -70,7 +71,7 @@ await hub.methods.claimUpTo(8453, referrer, amount).send({ from: referrer });   
 ## Preconditions
 
 ```javascript
-const canClaim = (i) => amounts[i] !== '0' && payouts[i] !== ZERO && BigInt(cover) > 0n;
+const canClaim = (i) => amounts[i] !== '0' && BigInt(cover) > 0n;
 const isParty = [referrer, ...payouts].some((a) => a.toLowerCase() === callerAddress.toLowerCase());
 ```
 
@@ -84,7 +85,6 @@ Designation guide.
 | `PotDry` | `claim` asked for more than the pot holds; use `claimUpTo` or `claimAll`. |
 | `NothingClaimable` | `claimAll` paid nothing, or the bucket is empty. |
 | `NotPayoutAuthorized` | The caller is neither the referrer nor the bucket's payout address. |
-| `PayoutNotDesignated` | A spoke chain bucket has no designation at the hub yet. |
 
 ## Events
 
@@ -112,7 +112,7 @@ is what the pot should hold.
 | Contract | Address | Chain |
 |---|---|---|
 | Referral hub | `0x68D207E22037d1B0764a509C16c08310C539ce94` | Ethereum |
-| `ReferralHubReader` | `0xd0ec5Cc9A6F4d1289fAdbA648C165027cF57c125` | Ethereum |
+| `ReferralHubReader` | `0xab91590fe31c0e800454B2f2ba3D4E3a355D3113` | Ethereum |
 | USDC (the pot's token) | `0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48` | Ethereum |
 
 Read the pot's token from the hub with `USD_TOKEN()` rather than hardcoding it. 6 decimals.

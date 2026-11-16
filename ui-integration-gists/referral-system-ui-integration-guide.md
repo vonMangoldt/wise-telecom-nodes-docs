@@ -109,13 +109,13 @@ const [standing, buckets] = await Promise.all([
 ]);
 
 // buckets.amounts[i] is what chain CHAINS[i] has credited; buckets.payouts[i] is the address a claim pays,
-// zero while the spoke chain's payout designation has not reached the hub.
+// the referrer itself until a designation from that chain has reached the hub.
 ```
 
 `ladderStandingOf` gives the referred and self inputs of a closed week, the tier each reaches, the next threshold of
 each (zero at the top tier), the three effective rates in basis points, the latest elevation window and an
 `elevated` flag. The current week reads zero until it closes and its records land. `total` sums every bucket and
-`claimableNow` only the designated ones, both before the pot's funding is considered.
+`claimableNow` equals it, both before the pot's funding is considered.
 
 On each vault, the book views show what the vault has measured for a referrer:
 
@@ -126,9 +126,9 @@ getCohortWeekCrumbs(address _referrer, uint256 _fromWeek, uint256 _count) return
 
 ## 4. The payout designation
 
-Commission accrues at the hub per source chain and referrer. On mainnet a bucket pays the referrer's own address
-unless the referrer sets another with `setPayoutAddress(address _payout)` on the hub. On Base, Arbitrum and Robinhood
-a bucket pays nothing until a designation from that chain has reached the hub.
+Commission accrues at the hub per source chain and referrer. Every bucket pays the referrer's own address on mainnet
+unless the referrer sets another: the mainnet bucket with `setPayoutAddress(address _payout)` on the hub, a Base,
+Arbitrum or Robinhood bucket with a designation from that chain that has reached the hub.
 
 On the spoke chain's registry:
 
@@ -148,7 +148,7 @@ await registry.methods.pushPayoutAddress(referrer).send({ from: referrer, value:
 
 The designation travels to the hub with the next shipment of the referrer's book on that chain, or at once through
 `pushPayoutAddress`, which anyone may send for any owner. The newest designation wins at the hub. Offer the push
-button when `claimablesOf` shows a zero payout for a chain with a nonzero amount. A designation of the zero address
+button when a designation is set on the spoke but `claimablesOf` still shows the referrer's own address for that chain. A designation of the zero address
 is valid and pays the referrer's own address on mainnet. A referrer that is a contract wallet on a spoke chain must
 designate a nonzero mainnet address it controls.
 
@@ -169,7 +169,7 @@ const hub = new web3.eth.Contract(HUB_ABI, HUB);                   // mainnet
 const usdc = new web3.eth.Contract(ERC20_ABI, await hub.methods.USD_TOKEN().call());
 
 const cover = await usdc.methods.balanceOf(HUB).call();             // what the pot can pay today
-const claimableChains = CHAINS.filter((_, i) => buckets.amounts[i] !== '0' && buckets.payouts[i] !== ZERO);
+const claimableChains = CHAINS.filter((_, i) => buckets.amounts[i] !== '0');
 await hub.methods.claimAll(referrer, claimableChains).send({ from: referrer });
 ```
 
@@ -249,7 +249,6 @@ variants `GracePeriodNotElapsed` and `NoInterest`).
 | `PotDry` | `claim` asked for more than the pot holds; use `claimUpTo` or `claimAll`. |
 | `NothingClaimable` | `claimAll` paid nothing. |
 | `NotPayoutAuthorized` | The caller is neither the referrer nor the bucket's payout address. |
-| `PayoutNotDesignated` | A spoke chain bucket has no designation at the hub yet. |
 
 ## Events
 
@@ -275,8 +274,8 @@ veto, and `ReferrerElevated` and `ReferrerElevationEnded` on the hub for elevati
   deposit it sends writes its own address there, on every chain, in every deposit.
 - **The first assignment wins everywhere.** A later deposit with another referrer succeeds as a deposit and the
   argument is ignored; show the recorded referrer, not the link's.
-- **Spoke chain buckets need a designation.** Without one the bucket accrues but cannot be claimed; a contract
-  wallet on a spoke chain must designate a mainnet address it controls.
+- **Spoke chain buckets pay the referrer's own mainnet address by default.** A designation from that chain redirects
+  them; a contract wallet on a spoke chain designates a mainnet address it controls.
 - **The current week is never shipped.** Only closed weeks travel, and a week becomes claimable only after its
   envelope is applied at the hub.
 - **A closed week keeps its verdict.** Rates can rise when more records arrive, never fall, and nothing already
@@ -298,7 +297,7 @@ Same vault address on every chain listed. Everything is 6 decimals.
 | Referral registry | `0x8d2C71eCF741B1A6ca1797Cf6E6B67aC9e234Ad3` | Arbitrum (rank 2) |
 | Referral registry | `0xC97aCd3450e60962E1259e5cFd78Dc99d0D86753` | Robinhood (rank 3) |
 | Referral hub | `0x68D207E22037d1B0764a509C16c08310C539ce94` | Ethereum |
-| `ReferralHubReader` | `0xd0ec5Cc9A6F4d1289fAdbA648C165027cF57c125` | Ethereum |
+| `ReferralHubReader` | `0xab91590fe31c0e800454B2f2ba3D4E3a355D3113` | Ethereum |
 
 The vault side referral functions become live on each vault once its selector round executes; until then
 `getReferralRegistry()` reads the zero address and the referral entrypoints are not routed.

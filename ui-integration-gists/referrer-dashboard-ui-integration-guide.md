@@ -40,8 +40,8 @@ elevation window and an `elevated` flag. The current week reads zero until it cl
 ```javascript
 const CHAINS = [1, 8453, 42161, 4663];
 const buckets = await reader.methods.claimablesOf(referrer, CHAINS).call();
-// buckets.amounts[i]: credited by chain CHAINS[i]; buckets.payouts[i]: the address a claim pays, zero while the
-// spoke chain's designation has not reached the hub; buckets.total; buckets.claimableNow (designated buckets only)
+// buckets.amounts[i]: credited by chain CHAINS[i]; buckets.payouts[i]: the address a claim pays, the referrer
+// itself until a designation from that chain has reached the hub; buckets.total; buckets.claimableNow (equal to total)
 ```
 
 Both totals are before the pot's funding. The cover is the hub's USDC balance, `USD_TOKEN().balanceOf(hub)`.
@@ -124,8 +124,8 @@ hub.events.WeekRatesRaised({ filter: { referrer } })
   the same ladder in the same week.
 - **A week's rate never falls.** A later record for the same week can raise it and the hub tops up what it paid.
   Until `settleWeeks` runs, a claimable may read low, never high.
-- **A zero payout address means not claimable yet**, not zero earnings. Point the referrer at the payout
-  designation.
+- **A payout address is never zero.** An undesignated bucket pays the referrer's own mainnet address; a contract
+  wallet that does not control that address on mainnet designates from the spoke.
 - **Pending versus settled.** A closed week above a vault's through week has not reached the hub; compare the
   vault's crumbs with the reader's `weekReportsAtSource` and `paidCursorsAtSource` for a per source picture.
 
@@ -134,7 +134,7 @@ hub.events.WeekRatesRaised({ filter: { referrer } })
 | Contract | Address | Chain |
 |---|---|---|
 | Referral hub | `0x68D207E22037d1B0764a509C16c08310C539ce94` | Ethereum |
-| `ReferralHubReader` | `0xd0ec5Cc9A6F4d1289fAdbA648C165027cF57c125` | Ethereum |
+| `ReferralHubReader` | `0xab91590fe31c0e800454B2f2ba3D4E3a355D3113` | Ethereum |
 | Vault `usdc` | `0x7e1EFF4301defc24936470B30bd1c686D2a295dc` | Ethereum, Base, Arbitrum |
 | Vault `usdt` | `0x7e1EBE1D25367C6D3bC0aA72A1f00fC5320a05d7` | Ethereum, Base, Arbitrum |
 | Vault `usdg` | `0x7E1e77EDE1d3b67ee46d031FC7De9e1379856064` | Ethereum, Arbitrum, Robinhood |
