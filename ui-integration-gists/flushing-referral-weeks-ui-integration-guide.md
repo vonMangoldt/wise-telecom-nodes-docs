@@ -134,7 +134,6 @@ it earned.
 - **Only closed weeks travel.** Nobody gains by flushing at a particular moment inside a week.
 - **The referrer's own flush moves the cursors.** A courier batch opens a book that was never flushed and then only
   ships weeks above the stored cursors; a referrer who wants to control what ships first flushes its own book first.
-  The Sovren vault keeps the earlier rule until its own port ships: there the referrer's own first flush opens the book.
 - **The courier share is paid on top.** An allowlisted bot earns 5 percent (the genesis courier share) of the
   commission of the closed weeks it priced first, paid by the protocol, never deducted from the referrer. A self
   flush earns no share.
